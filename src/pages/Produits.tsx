@@ -208,7 +208,7 @@ export const Produits = () => {
                                                     <IconButton
                                                         color="primary"
                                                         sx={{ bgcolor: 'primary.light', color: 'primary.contrastText', '&:hover': { bgcolor: 'primary.main' } }}
-                                                        onClick={() => { setSelectedArticle(art); setTargetCategId(cat.id); setArticleForm({ nom: art.nom, reference: art.reference, unite: art.unite, prix_achat: art.prix_achat, prix_vente: art.prix_vente, cout_livraison: art.cout_livraison || '', qte_actuelle: art.qte_actuelle, seuil_alerte: art.seuil_alerte }); setEditArticleModal(true); }}
+                                                        onClick={() => { setSelectedArticle(art); setTargetCategId(cat.id); setArticleForm({ nom: art.nom, reference: art.reference, unite: art.unite, prix_achat: art.prix_achat, prix_vente: art.prix_vente, cout_livraison: art.cout_livraison || '', qte_actuelle: art.qte_actuelle, qte_vide: art.qte_vide || '', seuil_alerte: art.seuil_alerte }); setEditArticleModal(true); }}
                                                     >
                                                         <EditIcon />
                                                     </IconButton>
@@ -264,7 +264,12 @@ export const Produits = () => {
                                     color="success"
                                     size="large"
                                     startIcon={<AddIcon />}
-                                    onClick={() => { setSelectedArticle(null); setTargetCategId(cat.id); setArticleForm({ nom: '', reference: '', unite: 'unité', prix_achat: '', prix_vente: '', cout_livraison: '', qte_actuelle: '', qte_vide: '', seuil_alerte: '' }); setArticleModal(true); }}
+                                    onClick={() => {
+                                        setSelectedArticle(null);
+                                        setTargetCategId(cat.id);
+                                        setArticleForm({ nom: '', reference: '', unite: 'unité', prix_achat: '', prix_vente: '', cout_livraison: '', qte_actuelle: '', qte_vide: '', seuil_alerte: '' });
+                                        setArticleModal(true);
+                                    }}
                                     sx={{ borderRadius: 2, px: 4, py: 2, fontSize: '1.1rem', fontWeight: 'bold' }}
                                 >
                                     Ajouter un Article à cette catégorie

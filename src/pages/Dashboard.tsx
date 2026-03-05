@@ -10,7 +10,6 @@ import {
     CircularProgress,
     Button,
     Grid,
-    TextField,
     Paper,
     Table,
     TableBody,
@@ -38,8 +37,8 @@ export const Dashboard = () => {
     const [stats, setStats] = useState<any>(null);
 
     // Filter for reports (Default to last 7 days)
-    const [reportDebut, setReportDebut] = useState(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
-    const [reportFin, setReportFin] = useState(new Date().toISOString().split('T')[0]);
+    const [reportDebut] = useState(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
+    const [reportFin] = useState(new Date().toISOString().split('T')[0]);
 
     const fetchStats = async () => {
         setLoading(true);

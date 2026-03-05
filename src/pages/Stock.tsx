@@ -198,7 +198,7 @@ export const Stock = () => {
             await stocksAPI.create(payload);
 
             setNotif({ open: true, msg: 'Mouvement enregistré !', severity: 'success' });
-            setFormData({ article_id: '', type: 'entrée', quantite: '', prix_unitaire: '', notes: '', client_nom: '', client_telephone: '', montant_paye: '', echeance: '' });
+            setFormData({ article_id: '', type: 'entrée', quantite: '', prix_unitaire: '', notes: '', client_nom: '', client_telephone: '', montant_paye: '', echeance: '', avec_livraison: false });
             setTabValue(0);
             loadData();
         } catch (error: any) {
