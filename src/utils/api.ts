@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { useAuthStore } from '../store';
 
-// Axios instance — toutes les requêtes passent par /api (proxied to :8000 via vite.config)
+// Axios instance — utiliser l'URL de production si définie, sinon '/api' pour le proxy local
 export const api = axios.create({
-    baseURL: '/api',
+    baseURL: import.meta.env.VITE_API_URL || '/api',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
