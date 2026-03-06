@@ -1,12 +1,15 @@
 import axios from 'axios';
 import { useAuthStore } from '../store';
 
-// Axios instance — utiliser l'URL de production si définie, sinon '/api' pour le proxy local
+// Configuration Axios
+// En production : https://force.vanda-studio.org/api
+// En local : /api (redirigé par le proxy Vite)
 export const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '/api',
+    baseURL: import.meta.env.VITE_API_URL || 'https://force.vanda-studio.org/api',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
     },
 });
 
