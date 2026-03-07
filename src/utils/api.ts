@@ -2,10 +2,13 @@ import axios from 'axios';
 import { useAuthStore } from '../store';
 
 // Configuration Axios
-// En production : https://api.force.vanda-studio.org/api
-// En local : /api (redirigé par le proxy Vite)
+// En production, Vercel injecte généralement nos variables d'environnement, mais s'il échoue, on le force.
+const isProd = import.meta.env.PROD;
+const prodUrl = 'https://api.force.vanda-studio.org/api';
+const localUrl = '/api';
+
 export const api = axios.create({
-    baseURL: import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'https://api.force.vanda-studio.org/api'),
+    baseURL: isProd ? (import.meta.env.VITE_API_URL || prodUrl) : localUrl,
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
