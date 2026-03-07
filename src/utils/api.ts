@@ -5,7 +5,7 @@ import { useAuthStore } from '../store';
 // En production : https://api.force.vanda-studio.org/api
 // En local : /api (redirigé par le proxy Vite)
 export const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'https://api.force.vanda-studio.org/api',
+    baseURL: import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || 'https://api.force.vanda-studio.org/api'),
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
