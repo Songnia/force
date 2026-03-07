@@ -50,6 +50,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 
 import { stocksAPI, articlesAPI, ventesAPI, dashboardAPI } from '../utils/api';
+import { cacheArticles, getCachedArticles, addToSyncQueue } from '../utils/db';
 
 export const Stock = () => {
     const theme = useTheme();
@@ -66,7 +67,8 @@ export const Stock = () => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [selectedMvt, setSelectedMvt] = useState<any>(null);
 
-    const [notif, setNotif] = useState({ open: false, msg: '', severity: 'success' as 'success' | 'error' });
+    // Notification state
+    const [notif, setNotif] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' | 'warning' | 'info' }>({ open: false, msg: '', severity: 'success' });
     const [todayStats, setTodayStats] = useState<any>(null);
 
     // POS State
@@ -121,25 +123,42 @@ export const Stock = () => {
             quantite: item.quantite,
             prix_unitaire: item.prix_vente,
         }));
+
+        const payload = {
+            reference,
+            type: 'comptant',
+            total: totalCart,
+            montant_recu: totalCart,
+            monnaie_rendue: 0,
+            avec_livraison: avecLivraison,
+            frais_livraison: totalLivraison,
+            lignes,
+        };
+
         try {
-            await ventesAPI.create({
-                reference,
-                type: 'comptant',
-                total: totalCart,
-                montant_recu: totalCart,
-                monnaie_rendue: 0,
-                avec_livraison: avecLivraison,
-                frais_livraison: totalLivraison,
-                lignes,
-            });
+            if (!navigator.onLine) {
+                throw new Error('Offline'); // Force le fallback si le navigateur sait qu'il est hors-ligne
+            }
+
+            await ventesAPI.create(payload);
             setNotif({ open: true, msg: `Vente enregistrée ! ${avecLivraison && totalLivraison > 0 ? `(+${totalLivraison.toLocaleString()} F livraison)` : ''}`, severity: 'success' });
             setCart([]);
             setAvecLivraison(false);
             setCartOpen(false);
             loadData();
         } catch (e: any) {
-            console.error('Erreur enregistrement vente', e);
-            setNotif({ open: true, msg: 'Erreur lors de la vente', severity: 'error' });
+            if (!navigator.onLine || e.message === 'Network Error' || e.message === 'Offline') {
+                // Sauvegarde hors-ligne
+                await addToSyncQueue({ type: 'vente', payload });
+                setNotif({ open: true, msg: 'Mode hors-ligne : Vente conservée en mémoire. Elle sera synchronisée à la reconnexion.', severity: 'warning' });
+                setCart([]);
+                setAvecLivraison(false);
+                setCartOpen(false);
+                // On ne rappelle pas loadData car le serveur est injoignable
+            } else {
+                console.error('Erreur enregistrement vente', e);
+                setNotif({ open: true, msg: 'Erreur lors de la vente', severity: 'error' });
+            }
         }
     };
 
@@ -154,14 +173,23 @@ export const Stock = () => {
             setArticles(artRes.data);
             setHistorique(histRes.data);
 
+            // Mise en cache des articles pour le mode hors-ligne
+            await cacheArticles(artRes.data);
+
             // Extract today's stats from daily_stats
             const todayStr = new Date().toISOString().split('T')[0];
             const todayData = statsRes.data.daily_stats?.find((s: any) => s.date === todayStr);
             setTodayStats(todayData || { revenue: 0, profit: 0, transactions: 0 });
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error loading stock data:', error);
-            setNotif({ open: true, msg: 'Erreur de chargement', severity: 'error' });
+            if (!navigator.onLine || error.message === 'Network Error') {
+                setNotif({ open: true, msg: 'Mode hors-ligne: Chargement depuis le cache local', severity: 'warning' });
+                const cachedArts = await getCachedArticles();
+                setArticles(cachedArts);
+            } else {
+                setNotif({ open: true, msg: 'Erreur de chargement', severity: 'error' });
+            }
         } finally {
             setLoading(false);
         }

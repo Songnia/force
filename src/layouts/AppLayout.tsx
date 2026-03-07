@@ -27,6 +27,7 @@ import SyncIcon from '@mui/icons-material/Sync';
 import { useAuthStore } from '../store';
 import { getPendingSyncItems, markSynced } from '../utils/db';
 import { ventesAPI } from '../utils/api';
+import { PWAInstallPrompt } from '../components/PWAInstallPrompt';
 
 export const AppLayout = () => {
     const theme = useTheme();
@@ -204,6 +205,9 @@ export const AppLayout = () => {
                     {snack.msg}
                 </Alert>
             </Snackbar>
+
+            {/* Prompt Installation PWA */}
+            <PWAInstallPrompt />
         </Box>
     );
 };

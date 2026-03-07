@@ -29,10 +29,14 @@ export interface SyncQueueItem {
     id?: number; // auto-incremented by Dexie
     type: 'vente'; // currently only ventes are queued offline
     payload: {
-        lignes: { article_id: number; quantite: number; prix_unitaire: number; benefice_unitaire: number }[];
+        reference: string;
+        type: string;
+        total: number;
+        montant_recu: number;
+        monnaie_rendue: number;
         avec_livraison: boolean;
         frais_livraison: number;
-        total: number;
+        lignes: { article_id: number; quantite: number; prix_unitaire: number }[];
     };
     createdAt: string; // ISO timestamp
     synced: boolean;

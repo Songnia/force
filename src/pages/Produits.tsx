@@ -21,7 +21,7 @@ export const Produits = () => {
     const [expanded, setExpanded] = useState<string | false>(false);
     const [categories, setCategories] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [snack, setSnack] = useState({ open: false, msg: '', severity: 'success' as any });
+    const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' | 'warning' | 'info' }>({ open: false, msg: '', severity: 'success' });
 
     // Catégorie modals
     const [categModal, setCategModal] = useState(false);
@@ -45,8 +45,15 @@ export const Produits = () => {
         try {
             const { data } = await categoriesAPI.list();
             setCategories(data);
-        } catch {
-            setSnack({ open: true, msg: 'Erreur chargement données', severity: 'error' });
+            // NB: On pourrait aussi ajouter une fonction cacheCategories(data) dans db.ts, mais on va afficher la structure à minima pour l'instant
+        } catch (e: any) {
+            console.error('Erreur réseau', e);
+            if (!navigator.onLine || e.message === 'Network Error') {
+                setSnack({ open: true, msg: 'Mode hors-ligne : Vous ne pouvez pas éditer les produits', severity: 'warning' });
+                // En mode hors-ligne, on montre au moins les articles en cache mais pas de catégories structurées si on ne les a pas codées.
+            } else {
+                setSnack({ open: true, msg: 'Erreur chargement données', severity: 'error' });
+            }
         } finally {
             setLoading(false);
         }
