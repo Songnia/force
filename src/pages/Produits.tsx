@@ -3,7 +3,7 @@ import {
     Box, Typography, List, ListItem, ListItemText, Fab, Accordion, AccordionSummary,
     AccordionDetails, Button, IconButton, Dialog, DialogTitle, DialogContent,
     DialogActions, DialogContentText, TextField, CircularProgress, Alert, Snackbar, Chip,
-    useMediaQuery, useTheme, Divider, InputAdornment
+    useMediaQuery, useTheme, Divider, InputAdornment, Switch, FormControlLabel
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -38,7 +38,8 @@ export const Produits = () => {
     const [targetCategId, setTargetCategId] = useState<number | null>(null);
     const [articleForm, setArticleForm] = useState({
         nom: '', reference: '', unite: 'unité',
-        prix_achat: '', prix_vente: '', cout_livraison: '', qte_actuelle: '', qte_vide: '', seuil_alerte: ''
+        prix_achat: '', prix_vente: '', cout_livraison: '', qte_actuelle: '', qte_vide: '', seuil_alerte: '',
+        est_reutilisable: false
     });
 
     const loadData = async () => {
@@ -215,7 +216,7 @@ export const Produits = () => {
                                                     <IconButton
                                                         color="primary"
                                                         sx={{ bgcolor: 'primary.light', color: 'primary.contrastText', '&:hover': { bgcolor: 'primary.main' } }}
-                                                        onClick={() => { setSelectedArticle(art); setTargetCategId(cat.id); setArticleForm({ nom: art.nom, reference: art.reference, unite: art.unite, prix_achat: art.prix_achat, prix_vente: art.prix_vente, cout_livraison: art.cout_livraison || '', qte_actuelle: art.qte_actuelle, qte_vide: art.qte_vide || '', seuil_alerte: art.seuil_alerte }); setEditArticleModal(true); }}
+                                                        onClick={() => { setSelectedArticle(art); setTargetCategId(cat.id); setArticleForm({ nom: art.nom, reference: art.reference, unite: art.unite, prix_achat: art.prix_achat, prix_vente: art.prix_vente, cout_livraison: art.cout_livraison || '', qte_actuelle: art.qte_actuelle, qte_vide: art.qte_vide || '', seuil_alerte: art.seuil_alerte, est_reutilisable: art.est_reutilisable ?? false }); setEditArticleModal(true); }}
                                                     >
                                                         <EditIcon />
                                                     </IconButton>
@@ -246,11 +247,13 @@ export const Produits = () => {
                                                             color={art.qte_actuelle <= art.seuil_alerte ? "error" : "success"}
                                                             sx={{ fontWeight: 'bold' }}
                                                         />
-                                                        <Chip
-                                                            label={`Vides: ${art.qte_vide}`}
-                                                            size="small"
-                                                            variant="outlined"
-                                                        />
+                                                        {art.est_reutilisable && (
+                                                            <Chip
+                                                                label={`Vides: ${art.qte_vide}`}
+                                                                size="small"
+                                                                variant="outlined"
+                                                            />
+                                                        )}
                                                     </Box>
                                                     <Typography component="span" fontWeight="900" color="primary.main" sx={{ fontSize: '1.1rem' }}>
                                                         {art.prix_vente.toLocaleString()} FCFA
@@ -274,7 +277,7 @@ export const Produits = () => {
                                     onClick={() => {
                                         setSelectedArticle(null);
                                         setTargetCategId(cat.id);
-                                        setArticleForm({ nom: '', reference: '', unite: 'unité', prix_achat: '', prix_vente: '', cout_livraison: '', qte_actuelle: '', qte_vide: '', seuil_alerte: '' });
+                                        setArticleForm({ nom: '', reference: '', unite: 'unité', prix_achat: '', prix_vente: '', cout_livraison: '', qte_actuelle: '', qte_vide: '', seuil_alerte: '', est_reutilisable: false });
                                         setArticleModal(true);
                                     }}
                                     sx={{ borderRadius: 2, px: 4, py: 2, fontSize: '1.1rem', fontWeight: 'bold' }}
@@ -360,6 +363,33 @@ export const Produits = () => {
                             InputProps={{ sx: { borderRadius: 3, height: 70, fontSize: '1.2rem' } }}
                             InputLabelProps={{ sx: { fontSize: '1.1rem' } }}
                         />
+
+                        {/* Toggle Produit Réutilisable */}
+                        <Box sx={{ gridColumn: isMobile ? 'auto' : '1 / -1', display: 'flex', alignItems: 'center', bgcolor: articleForm.est_reutilisable ? 'success.light' : 'grey.100', borderRadius: 3, p: 2, gap: 2, border: '1px solid', borderColor: articleForm.est_reutilisable ? 'success.main' : 'grey.300' }}>
+                            <Box sx={{ flexGrow: 1 }}>
+                                <Typography fontWeight="bold" fontSize="1.05rem">
+                                    {articleForm.est_reutilisable ? '♻️ Produit Réutilisable' : '🛒 Produit Consommable'}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    {articleForm.est_reutilisable
+                                        ? 'Bouteilles, capsules, palettes... Le stock vide est suivi.'
+                                        : 'Vêtements, nourriture, pièces... Pas de stock vide.'}
+                                </Typography>
+                            </Box>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={articleForm.est_reutilisable}
+                                        onChange={(e) => setArticleForm({ ...articleForm, est_reutilisable: e.target.checked, qte_vide: e.target.checked ? articleForm.qte_vide : '0' })}
+                                        color="success"
+                                        size="medium"
+                                    />
+                                }
+                                label="Activer"
+                                labelPlacement="start"
+                            />
+                        </Box>
+
                         <TextField
                             label="Stock Actuel (Pleins)"
                             type="number"
@@ -369,15 +399,19 @@ export const Produits = () => {
                             InputProps={{ sx: { borderRadius: 3 } }}
                             InputLabelProps={{ sx: { fontSize: '1.1rem' } }}
                         />
-                        <TextField
-                            label="Stock Actuel (Vides)"
-                            type="number"
-                            fullWidth
-                            value={articleForm.qte_vide}
-                            onChange={(e) => setArticleForm({ ...articleForm, qte_vide: e.target.value })}
-                            InputProps={{ sx: { borderRadius: 3 } }}
-                            InputLabelProps={{ sx: { fontSize: '1.1rem' } }}
-                        />
+                        {/* Champ Vides: uniquement si l'article est réutilisable */}
+                        {articleForm.est_reutilisable && (
+                            <TextField
+                                label="Stock Actuel (Vides)"
+                                type="number"
+                                fullWidth
+                                value={articleForm.qte_vide}
+                                onChange={(e) => setArticleForm({ ...articleForm, qte_vide: e.target.value })}
+                                InputProps={{ sx: { borderRadius: 3 } }}
+                                InputLabelProps={{ sx: { fontSize: '1.1rem' } }}
+                                helperText="Nombre de contenants vides à récupérer"
+                            />
+                        )}
                         <TextField
                             label="Unité (Kg, Sac, Unité...)"
                             fullWidth
