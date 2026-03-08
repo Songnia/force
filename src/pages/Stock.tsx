@@ -342,7 +342,7 @@ export const Stock = () => {
                                     </Box>
 
                                     <Typography variant="body2" color={art.qte_actuelle <= art.seuil_alerte ? "error.main" : "text.secondary"} sx={{ fontSize: '0.85rem' }}>
-                                        Plein: <b>{art.qte_actuelle}</b>{art.est_reutilisable ? <> &bull; Vide: <b>{art.qte_vide}</b></> : ''}
+                                        Plein: <b>{art.qte_actuelle}</b>{art.categorie?.est_reutilisable ? <> &bull; Vide: <b>{art.qte_vide}</b></> : ''}
                                     </Typography>
                                 </CardContent>
                             </Card>
@@ -476,7 +476,7 @@ export const Stock = () => {
                                 >
                                     {articles.map((art) => (
                                         <MenuItem key={art.id} value={art.id} sx={{ py: 2, fontSize: '1.1rem' }}>
-                                            {art.nom} — <Typography component="span" fontWeight="bold" color="primary">Pleins: {art.qte_actuelle}{art.est_reutilisable ? ` | Vides: ${art.qte_vide}` : ''}</Typography>
+                                            {art.nom} — <Typography component="span" fontWeight="bold" color="primary">Pleins: {art.qte_actuelle}{art.categorie?.est_reutilisable ? ` | Vides: ${art.qte_vide}` : ''}</Typography>
                                         </MenuItem>
                                     ))}
                                 </TextField>
