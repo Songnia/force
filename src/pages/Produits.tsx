@@ -28,7 +28,7 @@ export const Produits = () => {
     const [editCategModal, setEditCategModal] = useState(false);
     const [deleteCategModal, setDeleteCategModal] = useState(false);
     const [selectedCateg, setSelectedCateg] = useState<any>(null);
-    const [categForm, setCategForm] = useState({ nom: '', couleur: '#FF6B35' });
+    const [categForm, setCategForm] = useState({ nom: '', couleur: '#FF6B35', est_reutilisable: false });
 
     // Article modals
     const [articleModal, setArticleModal] = useState(false);
@@ -38,8 +38,7 @@ export const Produits = () => {
     const [targetCategId, setTargetCategId] = useState<number | null>(null);
     const [articleForm, setArticleForm] = useState({
         nom: '', reference: '', unite: 'unité',
-        prix_achat: '', prix_vente: '', cout_livraison: '', qte_actuelle: '', qte_vide: '', seuil_alerte: '',
-        est_reutilisable: false
+        prix_achat: '', prix_vente: '', cout_livraison: '', qte_actuelle: '', qte_vide: '', seuil_alerte: ''
     });
 
     const loadData = async () => {
@@ -136,7 +135,7 @@ export const Produits = () => {
                         <Button
                             variant="contained"
                             startIcon={<CategoryIcon />}
-                            onClick={() => { setSelectedCateg(null); setCategForm({ nom: '', couleur: '#FF6B35' }); setCategModal(true); }}
+                            onClick={() => { setSelectedCateg(null); setCategForm({ nom: '', couleur: '#FF6B35', est_reutilisable: false }); setCategModal(true); }}
                             sx={{ borderRadius: 3, px: 3, py: 1.5, fontSize: '1.1rem' }}
                         >
                             Nouvelle Catégorie
@@ -181,7 +180,7 @@ export const Produits = () => {
                                     variant="outlined"
                                     color="primary"
                                     startIcon={<EditIcon />}
-                                    onClick={(e) => { e.stopPropagation(); setSelectedCateg(cat); setCategForm({ nom: cat.nom, couleur: cat.couleur || '#FF6B35' }); setEditCategModal(true); }}
+                                    onClick={(e) => { e.stopPropagation(); setSelectedCateg(cat); setCategForm({ nom: cat.nom, couleur: cat.couleur || '#FF6B35', est_reutilisable: cat.est_reutilisable ?? false }); setEditCategModal(true); }}
                                     sx={{ borderRadius: 2, bgcolor: 'background.paper' }}
                                 >
                                     Modifier Catégorie
@@ -216,14 +215,14 @@ export const Produits = () => {
                                                     <IconButton
                                                         color="primary"
                                                         sx={{ bgcolor: 'primary.light', color: 'primary.contrastText', '&:hover': { bgcolor: 'primary.main' } }}
-                                                        onClick={() => { setSelectedArticle(art); setTargetCategId(cat.id); setArticleForm({ nom: art.nom, reference: art.reference, unite: art.unite, prix_achat: art.prix_achat, prix_vente: art.prix_vente, cout_livraison: art.cout_livraison || '', qte_actuelle: art.qte_actuelle, qte_vide: art.qte_vide || '', seuil_alerte: art.seuil_alerte, est_reutilisable: art.est_reutilisable ?? false }); setEditArticleModal(true); }}
+                                                        onClick={(e) => { e.currentTarget.blur(); setSelectedArticle(art); setTargetCategId(cat.id); setArticleForm({ nom: art.nom, reference: art.reference, unite: art.unite, prix_achat: art.prix_achat, prix_vente: art.prix_vente, cout_livraison: art.cout_livraison || '', qte_actuelle: art.qte_actuelle, qte_vide: art.qte_vide || '', seuil_alerte: art.seuil_alerte }); setEditArticleModal(true); }}
                                                     >
                                                         <EditIcon />
                                                     </IconButton>
                                                     <IconButton
                                                         color="error"
                                                         sx={{ bgcolor: 'error.light', color: 'error.contrastText', '&:hover': { bgcolor: 'error.main' } }}
-                                                        onClick={() => { setSelectedArticle(art); setDeleteArticleModal(true); }}
+                                                        onClick={(e) => { e.currentTarget.blur(); setSelectedArticle(art); setDeleteArticleModal(true); }}
                                                     >
                                                         <DeleteIcon />
                                                     </IconButton>
@@ -232,13 +231,14 @@ export const Produits = () => {
                                         }
                                     >
                                         <ListItemText
+                                            secondaryTypographyProps={{ component: 'div' } as any}
                                             primary={
                                                 <Typography variant="h4" fontWeight="bold" sx={{ mb: 1, fontSize: '1.2rem' }}>
                                                     {art.nom}
                                                 </Typography>
                                             }
                                             secondary={
-                                                <Box component="span" sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, mt: 1, alignItems: 'center' }}>
+                                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, mt: 1, alignItems: 'center' }}>
                                                     <Chip label={`Réf: ${art.reference}`} size="small" variant="outlined" sx={{ borderRadius: 1 }} />
                                                     <Box sx={{ display: 'flex', gap: 0.5 }}>
                                                         <Chip
@@ -277,7 +277,7 @@ export const Produits = () => {
                                     onClick={() => {
                                         setSelectedArticle(null);
                                         setTargetCategId(cat.id);
-                                        setArticleForm({ nom: '', reference: '', unite: 'unité', prix_achat: '', prix_vente: '', cout_livraison: '', qte_actuelle: '', qte_vide: '', seuil_alerte: '', est_reutilisable: false });
+                                        setArticleForm({ nom: '', reference: '', unite: 'unité', prix_achat: '', prix_vente: '', cout_livraison: '', qte_actuelle: '', qte_vide: '', seuil_alerte: '' });
                                         setArticleModal(true);
                                     }}
                                     sx={{ borderRadius: 2, px: 4, py: 2, fontSize: '1.1rem', fontWeight: 'bold' }}
@@ -296,7 +296,7 @@ export const Produits = () => {
                     <Fab
                         color="primary"
                         sx={{ position: 'fixed', bottom: 90, right: 20, width: 70, height: 70 }}
-                        onClick={() => { setSelectedCateg(null); setCategForm({ nom: '', couleur: '#FF6B35' }); setCategModal(true); }}
+                        onClick={() => { setSelectedCateg(null); setCategForm({ nom: '', couleur: '#FF6B35', est_reutilisable: false }); setCategModal(true); }}
                     >
                         <CategoryIcon fontSize="large" />
                     </Fab>
@@ -322,6 +322,32 @@ export const Produits = () => {
                         <Typography variant="h6" sx={{ mb: 1, fontWeight: 'bold' }}>Couleur distinctive</Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>Choisissez une couleur pour reconnaître facilement cette catégorie.</Typography>
                         <input type="color" value={categForm.couleur} onChange={(e) => setCategForm({ ...categForm, couleur: e.target.value })} style={{ width: '100%', height: 60, border: '1px solid #ccc', borderRadius: '12px', cursor: 'pointer', padding: '5px' }} />
+                    </Box>
+
+                    {/* Toggle Produit Réutilisable (Catégorie) */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', bgcolor: categForm.est_reutilisable ? 'success.light' : 'grey.100', borderRadius: 3, p: 2, gap: 2, border: '1px solid', borderColor: categForm.est_reutilisable ? 'success.main' : 'grey.300' }}>
+                        <Box sx={{ flexGrow: 1 }}>
+                            <Typography fontWeight="bold" fontSize="1.05rem">
+                                {categForm.est_reutilisable ? '♻️ Catégorie Réutilisable' : '🛒 Catégorie Consommable'}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                {categForm.est_reutilisable
+                                    ? 'Tous les membres gèrent un stock vide (bouteilles, casiers...).'
+                                    : 'Pas de stock de retour vide sur cette catégorie.'}
+                            </Typography>
+                        </Box>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={categForm.est_reutilisable}
+                                    onChange={(e) => setCategForm({ ...categForm, est_reutilisable: e.target.checked })}
+                                    color="success"
+                                    size="medium"
+                                />
+                            }
+                            label="Activer"
+                            labelPlacement="start"
+                        />
                     </Box>
                 </DialogContent>
                 <DialogActions sx={{ p: 3, mt: 2 }}>
@@ -364,31 +390,7 @@ export const Produits = () => {
                             InputLabelProps={{ sx: { fontSize: '1.1rem' } }}
                         />
 
-                        {/* Toggle Produit Réutilisable */}
-                        <Box sx={{ gridColumn: isMobile ? 'auto' : '1 / -1', display: 'flex', alignItems: 'center', bgcolor: articleForm.est_reutilisable ? 'success.light' : 'grey.100', borderRadius: 3, p: 2, gap: 2, border: '1px solid', borderColor: articleForm.est_reutilisable ? 'success.main' : 'grey.300' }}>
-                            <Box sx={{ flexGrow: 1 }}>
-                                <Typography fontWeight="bold" fontSize="1.05rem">
-                                    {articleForm.est_reutilisable ? '♻️ Produit Réutilisable' : '🛒 Produit Consommable'}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    {articleForm.est_reutilisable
-                                        ? 'Bouteilles, capsules, palettes... Le stock vide est suivi.'
-                                        : 'Vêtements, nourriture, pièces... Pas de stock vide.'}
-                                </Typography>
-                            </Box>
-                            <FormControlLabel
-                                control={
-                                    <Switch
-                                        checked={articleForm.est_reutilisable}
-                                        onChange={(e) => setArticleForm({ ...articleForm, est_reutilisable: e.target.checked, qte_vide: e.target.checked ? articleForm.qte_vide : '0' })}
-                                        color="success"
-                                        size="medium"
-                                    />
-                                }
-                                label="Activer"
-                                labelPlacement="start"
-                            />
-                        </Box>
+                        {/* Toggle Removed from Article */}
 
                         <TextField
                             label="Stock Actuel (Pleins)"
@@ -399,8 +401,8 @@ export const Produits = () => {
                             InputProps={{ sx: { borderRadius: 3 } }}
                             InputLabelProps={{ sx: { fontSize: '1.1rem' } }}
                         />
-                        {/* Champ Vides: uniquement si l'article est réutilisable */}
-                        {articleForm.est_reutilisable && (
+                        {/* Champ Vides: conditionné sur la catégorie (targetCategId ou selectedArticle) */}
+                        {((selectedArticle && selectedArticle.categorie?.est_reutilisable) || (targetCategId && categories.find(c => c.id === targetCategId)?.est_reutilisable)) && (
                             <TextField
                                 label="Stock Actuel (Vides)"
                                 type="number"

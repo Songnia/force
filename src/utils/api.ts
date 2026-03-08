@@ -58,7 +58,7 @@ export const articlesAPI = {
 // ─── Catégories ──────────────────────────────────────────────────────────────
 export const categoriesAPI = {
     list: () => api.get('/categories'),
-    create: (data: { nom: string; couleur?: string }) =>
+    create: (data: { nom: string; couleur?: string; est_reutilisable?: boolean }) =>
         api.post('/categories', data),
     update: (id: number, data: any) => api.put(`/categories/${id}`, data),
     delete: (id: number) => api.delete(`/categories/${id}`),

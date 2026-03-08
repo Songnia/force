@@ -14,7 +14,8 @@ import {
     ListItem,
     ListItemText,
     CircularProgress,
-    Alert
+    Alert,
+    Switch
 } from '@mui/material';
 import { useNavigate } from 'react-router';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
@@ -28,6 +29,7 @@ const steps = ['Nouveau Produit', 'Articles', 'Terminé'];
 export const Onboarding = () => {
     const [activeStep, setActiveStep] = useState(0);
     const [produit, setProduit] = useState('');
+    const [estReutilisable, setEstReutilisable] = useState(false);
     const [articles, setArticles] = useState<string[]>(['']);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -62,7 +64,8 @@ export const Onboarding = () => {
             try {
                 // 1. Create Category
                 const catRes = await categoriesAPI.create({
-                    nom: produit
+                    nom: produit,
+                    est_reutilisable: estReutilisable
                 });
                 const categorie_id = catRes.data.id;
 
@@ -132,6 +135,24 @@ export const Onboarding = () => {
                                     onChange={(e) => setProduit(e.target.value)}
                                     autoFocus
                                 />
+                                <Box sx={{ mt: 3, display: 'flex', alignItems: 'center', bgcolor: estReutilisable ? 'success.light' : 'grey.100', borderRadius: 3, p: 2, gap: 2, border: '1px solid', borderColor: estReutilisable ? 'success.main' : 'grey.300' }}>
+                                    <Box sx={{ flexGrow: 1 }}>
+                                        <Typography fontWeight="bold" fontSize="1.05rem">
+                                            {estReutilisable ? '♻️ Catégorie Réutilisable' : '🛒 Catégorie Consommable'}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {estReutilisable
+                                                ? 'Tous les articles gèrent un stock vide (bouteilles, casiers...).'
+                                                : 'Pas de stock de retour vide sur ce type de produit.'}
+                                        </Typography>
+                                    </Box>
+                                    <Switch
+                                        checked={estReutilisable}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEstReutilisable(e.target.checked)}
+                                        color="success"
+                                        size="medium"
+                                    />
+                                </Box>
                             </Box>
                         )}
 
