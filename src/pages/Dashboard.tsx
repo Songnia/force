@@ -120,7 +120,7 @@ export const Dashboard = () => {
         { label: 'Transactions', value: stats?.transactions_count || 0, unit: 'ventes', color: '#6a1b9a', icon: <ReceiptLongIcon fontSize="small" /> },
         { label: 'Pleins en Stock', value: stats?.total_pleins || 0, unit: 'articles', color: '#0277bd', icon: <InventoryIcon fontSize="small" /> },
         ...(stats?.has_reusable_products ? [{ label: 'Vides en Stock', value: stats?.total_vides || 0, unit: 'articles', color: '#ef6c00', icon: <Inventory2Icon fontSize="small" /> }] : []),
-        { label: 'Valeur du Stock', value: formatFCFA(stats?.stock_value || 0), unit: 'FCFA', color: '#E65100', icon: <AccountBalanceWalletIcon fontSize="small" /> },
+        { label: 'Val. Marchande du Stock', value: formatFCFA(stats?.stock_value || 0), unit: 'FCFA', color: '#E65100', icon: <AccountBalanceWalletIcon fontSize="small" /> },
         { label: 'Alertes Stock', value: stats?.stock_alerts_count || 0, unit: 'produits', color: '#c62828', icon: <WarningAmberIcon fontSize="small" /> },
     ];
 
