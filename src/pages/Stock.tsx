@@ -179,7 +179,7 @@ export const Stock = () => {
             // Extract today's stats from daily_stats
             const todayStr = new Date().toISOString().split('T')[0];
             const todayData = statsRes.data.daily_stats?.find((s: any) => s.date === todayStr);
-            setTodayStats(todayData || { revenue: 0, profit: 0, transactions: 0 });
+            setTodayStats(todayData || { revenue: 0, profit: 0, transactions_count: 0 });
 
         } catch (error: any) {
             console.error('Error loading stock data:', error);
@@ -292,7 +292,7 @@ export const Stock = () => {
                         <Card elevation={0} sx={{ flex: 1, minWidth: 120, bgcolor: 'secondary.main', color: 'white', borderRadius: 2 }}>
                             <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 }, textAlign: 'center' }}>
                                 <Typography variant="caption" sx={{ opacity: 0.8, textTransform: 'uppercase', fontWeight: 'bold' }}>Ventes</Typography>
-                                <Typography variant="h5" fontWeight="bold">{todayStats?.transactions || 0}</Typography>
+                                <Typography variant="h5" fontWeight="bold">{todayStats?.transactions_count || 0}</Typography>
                             </CardContent>
                         </Card>
                     </Box>
