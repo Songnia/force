@@ -16,7 +16,17 @@ import {
     ListItemText,
     Snackbar,
     Alert,
+    Avatar,
+    IconButton,
+    Menu,
+    MenuItem,
+    Divider as MuiDivider,
 } from '@mui/material';
+import LanguageIcon from '@mui/icons-material/Language';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import PersonIcon from '@mui/icons-material/Person';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import CategoryIcon from '@mui/icons-material/Category';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
@@ -35,6 +45,18 @@ export const AppLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const role = useAuthStore((s) => s.role);
+    const user = useAuthStore((s) => s.user);
+
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const openMenu = Boolean(anchorEl);
+
+    const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+    };
 
     const [isOnline, setIsOnline] = useState(navigator.onLine);
     const [syncing, setSyncing] = useState(false);
@@ -164,13 +186,133 @@ export const AppLayout = () => {
                         ))}
                     </List>
 
-                    <Box sx={{ mt: 'auto', p: 2, borderTop: '1px solid', borderColor: 'divider' }}>
-                        <ListItem disablePadding>
-                            <ListItemButton onClick={handleLogout} sx={{ borderRadius: 2, color: 'error.main' }}>
-                                <ListItemIcon sx={{ color: 'error.main' }}><LogoutIcon /></ListItemIcon>
-                                <ListItemText primary="Déconnexion" />
-                            </ListItemButton>
-                        </ListItem>
+                    <Box sx={{ mt: 'auto', p: 1.5, borderTop: '1px solid', borderColor: 'divider' }}>
+                        <ListItemButton
+                            onClick={handleOpenMenu}
+                            sx={{
+                                borderRadius: 3,
+                                py: 1,
+                                px: 1.5,
+                                bgcolor: openMenu ? 'action.selected' : 'transparent',
+                                '&:hover': { bgcolor: 'action.hover' }
+                            }}
+                        >
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}>
+                                <Avatar
+                                    sx={{
+                                        width: 40,
+                                        height: 40,
+                                        bgcolor: 'primary.main',
+                                        fontSize: '1rem',
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    {user?.nom?.charAt(0).toUpperCase() || 'U'}
+                                </Avatar>
+                                <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
+                                    <Typography variant="subtitle2" noWrap fontWeight="bold">
+                                        {user?.nom || 'Utilisateur'}
+                                    </Typography>
+                                    <Typography variant="caption" noWrap color="text.secondary" display="block">
+                                        {user?.email || 'email@example.com'}
+                                    </Typography>
+                                </Box>
+                                <KeyboardArrowDownIcon
+                                    fontSize="small"
+                                    sx={{
+                                        color: 'text.secondary',
+                                        transform: openMenu ? 'rotate(180deg)' : 'none',
+                                        transition: 'transform 0.2s'
+                                    }}
+                                />
+                            </Box>
+                        </ListItemButton>
+
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={openMenu}
+                            onClose={handleCloseMenu}
+                            onClick={handleCloseMenu}
+                            transformOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+                            anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
+                            PaperProps={{
+                                sx: {
+                                    mt: -1,
+                                    width: 250,
+                                    borderRadius: 3,
+                                    boxShadow: '0px 10px 40px rgba(0,0,0,0.1)',
+                                    overflow: 'visible',
+                                    '&:before': {
+                                        content: '""',
+                                        display: 'block',
+                                        position: 'absolute',
+                                        bottom: -10,
+                                        left: 48,
+                                        width: 10,
+                                        height: 10,
+                                        bgcolor: 'background.paper',
+                                        transform: 'translateY(-50%) rotate(45deg)',
+                                        zIndex: 0,
+                                    },
+                                },
+                            }}
+                        >
+                            <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                <Avatar
+                                    sx={{
+                                        width: 48,
+                                        height: 48,
+                                        bgcolor: 'primary.light',
+                                        color: 'primary.contrastText',
+                                        fontSize: '1.2rem',
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    {user?.nom?.charAt(0).toUpperCase() || 'U'}
+                                </Avatar>
+                                <Box sx={{ overflow: 'hidden' }}>
+                                    <Typography variant="subtitle1" noWrap fontWeight="bold">
+                                        {user?.nom || 'Utilisateur'}
+                                    </Typography>
+                                    <Typography variant="body2" noWrap color="text.secondary">
+                                        {user?.email || 'email@example.com'}
+                                    </Typography>
+                                </Box>
+                            </Box>
+
+                            <MuiDivider sx={{ my: 1 }} />
+
+                            <MenuItem sx={{ py: 1.2, px: 2, gap: 2 }}>
+                                <LanguageIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                                <ListItemText primary="Français" />
+                                <KeyboardArrowDownIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                            </MenuItem>
+
+                            <MenuItem sx={{ py: 1.2, px: 2, gap: 2 }}>
+                                <CreditCardIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                                <ListItemText primary="Mon abonnement" />
+                            </MenuItem>
+
+                            <MenuItem sx={{ py: 1.2, px: 2, gap: 2 }}>
+                                <PersonIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                                <ListItemText primary="Mon Profil" />
+                            </MenuItem>
+
+                            <MenuItem sx={{ py: 1.2, px: 2, gap: 2 }}>
+                                <HelpOutlineIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                                <ListItemText primary="Centre d'aide" />
+                            </MenuItem>
+
+                            <MuiDivider sx={{ my: 1 }} />
+
+                            <MenuItem
+                                onClick={handleLogout}
+                                sx={{ py: 1.2, px: 2, gap: 2, color: 'error.main' }}
+                            >
+                                <LogoutIcon fontSize="small" />
+                                <ListItemText primary="Se déconnecter" />
+                            </MenuItem>
+                        </Menu>
                     </Box>
                 </Drawer>
             )}
