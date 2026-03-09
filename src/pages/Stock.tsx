@@ -48,6 +48,7 @@ import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import EditIcon from '@mui/icons-material/Edit';
 
 import { stocksAPI, articlesAPI, ventesAPI, dashboardAPI } from '../utils/api';
 import { cacheArticles, getCachedArticles, addToSyncQueue } from '../utils/db';
@@ -65,7 +66,9 @@ export const Stock = () => {
     const [historique, setHistorique] = useState<any[]>([]);
 
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);
     const [selectedMvt, setSelectedMvt] = useState<any>(null);
+    const [editingMvt, setEditingMvt] = useState<any>(null);
 
     // Notification state
     const [notif, setNotif] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' | 'warning' | 'info' }>({ open: false, msg: '', severity: 'success' });
@@ -243,6 +246,30 @@ export const Stock = () => {
             loadData();
         } catch (error) {
             setNotif({ open: true, msg: 'Erreur lors de la suppression', severity: 'error' });
+        }
+    };
+
+    const handleEditOpen = (mvt: any) => {
+        setEditingMvt({
+            id: mvt.id,
+            article_id: mvt.article_id,
+            type: mvt.type,
+            quantite: mvt.quantite,
+            prix_unitaire: mvt.prix_unitaire || '',
+            notes: mvt.notes || ''
+        });
+        setEditModalOpen(true);
+    };
+
+    const handleEditSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await stocksAPI.update(editingMvt.id, editingMvt);
+            setNotif({ open: true, msg: 'Mouvement mis à jour !', severity: 'success' });
+            setEditModalOpen(false);
+            loadData();
+        } catch (error: any) {
+            setNotif({ open: true, msg: 'Erreur: ' + (error.response?.data?.error || error.message), severity: 'error' });
         }
     };
 
@@ -659,9 +686,14 @@ export const Stock = () => {
                                             <Typography variant="body2" sx={{ fontStyle: 'italic', maxWidth: '70%', color: 'text.secondary' }}>
                                                 {mvt.notes || 'Aucune note'}
                                             </Typography>
-                                            <IconButton color="error" onClick={() => { setSelectedMvt(mvt); setDeleteModalOpen(true); }} size="large">
-                                                <DeleteIcon />
-                                            </IconButton>
+                                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                                <IconButton color="primary" onClick={() => handleEditOpen(mvt)} size="large">
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton color="error" onClick={() => { setSelectedMvt(mvt); setDeleteModalOpen(true); }} size="large">
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </Box>
                                         </Box>
                                     </CardContent>
                                 </Card>
@@ -706,6 +738,12 @@ export const Stock = () => {
                                             <TableCell sx={{ color: 'text.secondary', maxWidth: 200 }}>{mvt.notes}</TableCell>
                                             <TableCell align="right">
                                                 <IconButton
+                                                    color="primary"
+                                                    onClick={() => handleEditOpen(mvt)}
+                                                >
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton
                                                     color="error"
                                                     onClick={() => { setSelectedMvt(mvt); setDeleteModalOpen(true); }}
                                                 >
@@ -721,6 +759,7 @@ export const Stock = () => {
                 </Box>
             )}
 
+            {/* Delete Modal */}
             <Dialog
                 open={deleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
@@ -742,6 +781,54 @@ export const Stock = () => {
                         Oui, Supprimer
                     </Button>
                 </DialogActions>
+            </Dialog>
+
+            {/* Edit Modal */}
+            <Dialog
+                open={editModalOpen}
+                onClose={() => setEditModalOpen(false)}
+                PaperProps={{ sx: { borderRadius: 5, p: 1, width: '100%', maxWidth: 500 } }}
+            >
+                <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, color: 'primary.main', pb: 1 }}>
+                    <EditIcon color="primary" />
+                    Modifier le mouvement
+                </DialogTitle>
+                <Box component="form" onSubmit={handleEditSubmit}>
+                    <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                        <TextField
+                            label="Quantité"
+                            type="number"
+                            fullWidth
+                            value={editingMvt?.quantite || ''}
+                            onChange={(e) => setEditingMvt({ ...editingMvt, quantite: e.target.value })}
+                            required
+                            InputProps={{ sx: { borderRadius: 2 } }}
+                        />
+                        <TextField
+                            label="Prix Unitaire (Optionnel)"
+                            type="number"
+                            fullWidth
+                            value={editingMvt?.prix_unitaire || ''}
+                            onChange={(e) => setEditingMvt({ ...editingMvt, prix_unitaire: e.target.value })}
+                            InputProps={{ sx: { borderRadius: 2 } }}
+                        />
+                        <TextField
+                            label="Notes"
+                            fullWidth
+                            multiline
+                            rows={3}
+                            value={editingMvt?.notes || ''}
+                            onChange={(e) => setEditingMvt({ ...editingMvt, notes: e.target.value })}
+                            InputProps={{ sx: { borderRadius: 2 } }}
+                        />
+                    </DialogContent>
+                    <DialogActions sx={{ p: 3 }}>
+                        <Button onClick={() => setEditModalOpen(false)}>Annuler</Button>
+                        <Button type="submit" variant="contained" color="primary" sx={{ borderRadius: 2, px: 3 }}>
+                            Enregistrer
+                        </Button>
+                    </DialogActions>
+                </Box>
             </Dialog>
 
             <Snackbar
