@@ -9,8 +9,12 @@ import {
     CardContent,
     CircularProgress,
     Alert,
-    Link
+    Link,
+    InputAdornment,
+    IconButton
 } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useAuthStore } from '../store';
 import { useNavigate, Link as RouterLink } from 'react-router';
 import { authAPI } from '../utils/api';
@@ -20,8 +24,14 @@ export const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    };
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -92,11 +102,27 @@ export const Login = () => {
                                 label="Mot de passe"
                                 variant="outlined"
                                 fullWidth
-                                type="password"
+                                type={showPassword ? 'text' : 'password'}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                                 autoComplete="current-password"
+                                slotProps={{
+                                    input: {
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    },
+                                }}
                             />
 
                             <Button

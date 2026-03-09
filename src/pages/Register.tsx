@@ -9,8 +9,12 @@ import {
     CardContent,
     CircularProgress,
     Alert,
-    Link
+    Link,
+    InputAdornment,
+    IconButton
 } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useAuthStore } from '../store';
 import { useNavigate, Link as RouterLink } from 'react-router';
 import { authAPI } from '../utils/api';
@@ -21,8 +25,14 @@ export const Register = () => {
     const [nom, setNom] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    };
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -103,12 +113,31 @@ export const Register = () => {
                                 label="Mot de passe (8 caractères min.)"
                                 variant="outlined"
                                 fullWidth
-                                type="password"
+                                type={showPassword ? 'text' : 'password'}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                inputProps={{ minLength: 8 }}
                                 autoComplete="new-password"
+                                slotProps={{
+                                    input: {
+                                        sx: { mb: 0 },
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    },
+                                    htmlInput: {
+                                        minLength: 8,
+                                    }
+                                }}
                             />
 
                             <Button
