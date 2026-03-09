@@ -222,7 +222,7 @@ export const Dashboard = () => {
                                             {new Date(day.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
                                         </TableCell>
                                         <TableCell align="center">
-                                            <Chip label={day.transactions || 0} size="small" sx={{ fontWeight: 'bold', height: 20, fontSize: '0.7rem' }} />
+                                            <Chip label={day.transactions_count || 0} size="small" sx={{ fontWeight: 'bold', height: 20, fontSize: '0.7rem' }} />
                                         </TableCell>
                                         <TableCell align="right" sx={{ color: 'info.main' }}>
                                             {day.supply > 0 ? formatFCFA(day.supply) : '-'}
