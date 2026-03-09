@@ -333,10 +333,16 @@ export const Stock = () => {
                                                 {(art.revenue || 0).toLocaleString()}
                                             </Typography>
                                         </Box>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                                             <Typography variant="caption" color="text.secondary">Bénéfice</Typography>
                                             <Typography variant="caption" fontWeight="bold" color="info.main">
                                                 {(art.profit || 0).toLocaleString()}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            <Typography variant="caption" color="text.secondary">Val. Marchande</Typography>
+                                            <Typography variant="caption" fontWeight="bold" color="primary.main">
+                                                {(art.qte_actuelle * art.prix_vente).toLocaleString()}
                                             </Typography>
                                         </Box>
                                     </Box>
