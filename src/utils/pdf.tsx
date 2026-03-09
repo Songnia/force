@@ -1,64 +1,196 @@
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 
 // --- Styling pour Ticket de Caisse (Thermique 80mm) ---
 // Largeur 80mm = ~226 points
 const receiptStyles = StyleSheet.create({
-    page: { padding: 10, fontSize: 10, fontFamily: 'Helvetica', width: 226 },
-    header: { textAlign: 'center', marginBottom: 10 },
-    title: { fontSize: 14, fontWeight: 'bold', marginBottom: 2 },
-    subtitle: { fontSize: 9, color: '#333' },
-    divider: { borderBottomWidth: 1, borderBottomColor: '#000', borderBottomStyle: 'dashed', marginVertical: 5 },
-    itemRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 },
-    itemName: { width: '60%' },
-    itemPrice: { width: '40%', textAlign: 'right' },
-    totalRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 5, fontWeight: 'bold', fontSize: 12 },
-    footer: { marginTop: 15, textAlign: 'center', fontSize: 8 }
+    page: {
+        padding: 12,
+        fontSize: 9,
+        fontFamily: 'Helvetica',
+        width: 226,
+        color: '#1a1a1a'
+    },
+    header: {
+        alignItems: 'center',
+        marginBottom: 12
+    },
+    logo: {
+        width: 40,
+        height: 40,
+        marginBottom: 4,
+        borderRadius: 4
+    },
+    shopName: {
+        fontSize: 16,
+        fontWeight: 'extrabold',
+        color: '#d32f2f', // Brand red
+        marginBottom: 2
+    },
+    subtitle: {
+        fontSize: 8,
+        color: '#666',
+        marginBottom: 2
+    },
+    divider: {
+        borderBottomWidth: 0.5,
+        borderBottomColor: '#ccc',
+        borderBottomStyle: 'dashed',
+        marginVertical: 6
+    },
+    infoRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 2,
+        fontSize: 8
+    },
+    label: {
+        color: '#666'
+    },
+    value: {
+        fontWeight: 'bold'
+    },
+    tableHeader: {
+        flexDirection: 'row',
+        borderBottomWidth: 0.5,
+        borderBottomColor: '#eee',
+        paddingBottom: 4,
+        marginBottom: 4,
+        fontSize: 7,
+        fontWeight: 'bold',
+        color: '#999',
+        textTransform: 'uppercase'
+    },
+    itemRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 4
+    },
+    itemName: {
+        flex: 1,
+        fontSize: 9,
+        fontWeight: 'medium'
+    },
+    itemQty: {
+        width: 30,
+        textAlign: 'center'
+    },
+    itemPrice: {
+        width: 60,
+        textAlign: 'right',
+        fontWeight: 'bold'
+    },
+    summaryRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 2,
+        fontSize: 9
+    },
+    totalRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 6,
+        paddingTop: 6,
+        borderTopWidth: 1,
+        borderTopColor: '#000',
+        fontWeight: 'bold',
+        fontSize: 12
+    },
+    footer: {
+        marginTop: 20,
+        textAlign: 'center',
+        fontSize: 7,
+        color: '#999',
+        lineHeight: 1.4
+    }
 });
 
 export const ReceiptDocument = ({ vente }: { vente: any }) => (
     <Document>
         <Page style={receiptStyles.page}>
             <View style={receiptStyles.header}>
-                <Text style={receiptStyles.title}>FORCE</Text>
-                <Text style={receiptStyles.subtitle}>Votre Partenaire Business</Text>
-                <Text style={receiptStyles.subtitle}>Tél: +237 600 000 000</Text>
+                <Image src="/logo.png" style={receiptStyles.logo} />
+                <Text style={receiptStyles.shopName}>FORCE</Text>
+                <Text style={receiptStyles.subtitle}>La force de gérer, la liberté de grandir.</Text>
+                <Text style={receiptStyles.subtitle}>Douala, Cameroun | Tél: +237 600 000 000</Text>
             </View>
 
             <View style={receiptStyles.divider} />
 
-            <View style={{ marginBottom: 5 }}>
-                <Text>Réf: {vente.reference}</Text>
-                <Text>Date: {vente.date}</Text>
-                <Text>Client: {vente.client}</Text>
+            <View style={{ marginBottom: 4 }}>
+                <View style={receiptStyles.infoRow}>
+                    <Text style={receiptStyles.label}>Facture N° :</Text>
+                    <Text style={receiptStyles.value}>{vente.reference}</Text>
+                </View>
+                <View style={receiptStyles.infoRow}>
+                    <Text style={receiptStyles.label}>Date :</Text>
+                    <Text style={receiptStyles.value}>{new Date(vente.created_at).toLocaleString('fr-FR')}</Text>
+                </View>
+                <View style={receiptStyles.infoRow}>
+                    <Text style={receiptStyles.label}>Caissier :</Text>
+                    <Text style={receiptStyles.value}>{vente.user?.nom || 'Admin'}</Text>
+                </View>
+                {vente.credit && (
+                    <View style={receiptStyles.infoRow}>
+                        <Text style={receiptStyles.label}>Client :</Text>
+                        <Text style={receiptStyles.value}>{vente.credit.client_nom}</Text>
+                    </View>
+                )}
             </View>
 
             <View style={receiptStyles.divider} />
 
-            {/* Simulating sale items for the receipt MVP */}
-            <View style={receiptStyles.itemRow}>
-                <Text style={receiptStyles.itemName}>1x Article A</Text>
-                <Text style={receiptStyles.itemPrice}>5 000 F</Text>
-            </View>
-            <View style={receiptStyles.itemRow}>
-                <Text style={receiptStyles.itemName}>2x Article B</Text>
-                <Text style={receiptStyles.itemPrice}>10 000 F</Text>
+            <View style={receiptStyles.tableHeader}>
+                <Text style={receiptStyles.itemName}>Désignation</Text>
+                <Text style={receiptStyles.itemQty}>Qté</Text>
+                <Text style={receiptStyles.itemPrice}>Total</Text>
             </View>
 
+            {vente.lignes?.map((ligne: any, idx: number) => (
+                <View style={receiptStyles.itemRow} key={idx}>
+                    <Text style={receiptStyles.itemName}>{ligne.article?.nom || 'Article inconnu'}</Text>
+                    <Text style={receiptStyles.itemQty}>{ligne.quantite}</Text>
+                    <Text style={receiptStyles.itemPrice}>{(ligne.quantite * ligne.prix_unitaire).toLocaleString()} F</Text>
+                </View>
+            ))}
+
             <View style={receiptStyles.divider} />
+
+            <View style={receiptStyles.summaryRow}>
+                <Text>Sous-total</Text>
+                <Text>{(vente.total - (vente.frais_livraison || 0)).toLocaleString()} F</Text>
+            </View>
+
+            {vente.frais_livraison > 0 && (
+                <View style={receiptStyles.summaryRow}>
+                    <Text>Livraison</Text>
+                    <Text>{vente.frais_livraison.toLocaleString()} F</Text>
+                </View>
+            )}
 
             <View style={receiptStyles.totalRow}>
-                <Text>TOTAL</Text>
-                <Text>{vente.total} FCFA</Text>
+                <Text>NET À PAYER</Text>
+                <Text>{vente.total.toLocaleString()} FCFA</Text>
             </View>
 
-            <View style={{ marginTop: 5, flexDirection: 'row', justifyContent: 'space-between', fontSize: 9 }}>
-                <Text>Mode:</Text>
-                <Text>{vente.type}</Text>
+            <View style={{ marginTop: 8, fontSize: 8 }}>
+                <View style={receiptStyles.infoRow}>
+                    <Text style={receiptStyles.label}>Mode de paiement :</Text>
+                    <Text style={receiptStyles.value}>{vente.type === 'comptant' ? 'Espèces' : 'Crédit'}</Text>
+                </View>
+                <View style={receiptStyles.infoRow}>
+                    <Text style={receiptStyles.label}>Montant reçu :</Text>
+                    <Text style={receiptStyles.value}>{vente.montant_recu.toLocaleString()} F</Text>
+                </View>
+                <View style={receiptStyles.infoRow}>
+                    <Text style={receiptStyles.label}>Monnaie rendue :</Text>
+                    <Text style={receiptStyles.value}>{vente.monnaie_rendue.toLocaleString()} F</Text>
+                </View>
             </View>
 
             <View style={receiptStyles.footer}>
-                <Text>Merci de votre visite !</Text>
-                <Text>Propulsé par FORCE</Text>
+                <Text>Merci de votre confiance !</Text>
+                <Text>Les marchandises vendues ne sont ni reprises ni échangées.</Text>
+                <Text>Logiciel de gestion FORCE v1.0</Text>
             </View>
         </Page>
     </Document>
