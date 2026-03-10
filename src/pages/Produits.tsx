@@ -423,7 +423,19 @@ export const Produits = () => {
                             InputLabelProps={{ sx: { fontSize: '1rem' } }}
                         />
                         <TextField
-                            label="Prix deVente (FCFA) *"
+                            label="Prix d'Achat (FCFA)"
+                            type="number"
+                            fullWidth
+                            value={articleForm.prix_achat}
+                            onChange={(e) => setArticleForm({ ...articleForm, prix_achat: e.target.value })}
+                            InputProps={{
+                                startAdornment: <InputAdornment position="start">F</InputAdornment>,
+                                sx: { borderRadius: 3, height: 70, fontSize: '1.3rem' }
+                            }}
+                            InputLabelProps={{ sx: { fontSize: '1.1rem' } }}
+                        />
+                        <TextField
+                            label="Prix de Vente (FCFA) *"
                             type="number"
                             fullWidth
                             value={articleForm.prix_vente}
